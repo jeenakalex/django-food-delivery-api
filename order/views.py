@@ -36,7 +36,7 @@ class OrderListByCustomerView(generics.ListAPIView):
     def get_queryset(self):
         """Return orders that belong to the authenticated customer"""
         customer_id = self.kwargs.get('customer_id')
-        customer = get_object_or_404(UserProfile, id=customer_id)  # Ensure customer exists
+        customer = get_object_or_404(UserProfile, id=customer_id) 
         return Order.objects.filter(customer=customer).order_by('-created_at')
 
 
@@ -78,14 +78,11 @@ class CancelOrderView(APIView):
         order = get_object_or_404(Order, id=order_id)
      
         if is_customer:
-            print("CUSTOMER HERE")
             order = get_object_or_404(Order, id=order_id, customer=request.user)
-            # Check if order is already delivered or cancelled
             is_admin = False
             if order.status in ['assigned','delivered', 'cancelled']:
                 return Response({"error": "Order cannot be cancelled"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Check if order was created more than 30 minutes ago
             time_difference = now() - order.created_at
             if time_difference > timedelta(minutes=30):
                 return Response({"error": "Order can only be cancelled within 30 minutes of creation"},
@@ -95,11 +92,7 @@ class CancelOrderView(APIView):
         order.cancel_reason = request.data.get("reason", "No reason provided")
         order.save()
         if is_admin:
-
-            print("Admin here-----------")
-            # Send email notifications
             self.send_cancel_email(order, request.user)
-            # Release Agent
             self.update_agent_status(order)
              
         return Response({"message": "Order cancelled successfully"}, status=status.HTTP_200_OK)
@@ -116,10 +109,8 @@ class CancelOrderView(APIView):
         subject = f"Order #{order.id} Cancellation Notification"
         customer_email = order.customer.email
         agent = order.agent
-        # Email content for customer
         message = f"Hello {order.customer.first_name},\n\nYour order #{order.id} has been cancelled.\n\nReason: {order.cancel_reason} \n\nIf you have any questions, please contact our support team.\n\n."
         send_email(subject, message,customer_email)
-        # Email content for agent
         if agent:
             message = f"Hello {agent.first_name},\n\n Order #{order.id} assigned to you has been cancelled.\n\nReason: {order.cancel_reason} \n\n."
             send_email(subject, message,agent.email)
@@ -143,12 +134,10 @@ class UpdateOrderView(APIView):
         payment_mode = request.data.get("payment_mode", order.payment_mode) or order.payment_mode
         items_data = request.data.get("items", [])
        
-        # Validate items
         if not items_data:
             return Response({"error": "At least one item is required to update the order."}, status=status.HTTP_400_BAD_REQUEST)
     
         order.items.all().delete()
-        # Add updated items
         new_items = []
         for item in items_data:
            
@@ -158,7 +147,6 @@ class UpdateOrderView(APIView):
          
             if product_id and quantity and price:
                 product = get_object_or_404(Product, id=product_id)
-                # Create and save the order product
                 new_items.append(OrderProduct(order=order, product=product, quantity=quantity, price=price))
                 
         OrderProduct.objects.bulk_create(new_items)
@@ -184,10 +172,8 @@ class AssignAgentView(APIView):
         agent = get_object_or_404(UserProfile, id=agent_id, role="AGENT", status="ACTIVE", agent_status="AVAILABLE")
         order.agent = agent
         order.save()
-        # Update UserProfile 
         agent.agent_status = "UNAVAILABLE"
         agent.save()
-        # Send Email to agent when an order is assigned
         subject = "New Order Assigned"
         message = f"Dear {agent.first_name},\n\nWe are pleased to inform you that a new order has been assigned to you. Please find the details below:\n\nOrder Details:\nOrder ID:: {order.id}\nCustomer Name: {order.customer.first_name}\n\n."
         send_email(subject, message,agent.email)
@@ -206,15 +192,12 @@ class VerifyOrderOTPView(APIView):
 
         order = get_object_or_404(Order, id=order_id)
 
-        # Check if the agent is assigned to the order
         if order.agent != request.user:
             return Response({"error": "You are not assigned to this order"}, status=status.HTTP_403_FORBIDDEN)
 
-        # Validate OTP
         if order.otp_code and order.otp_code == otp:
             order.status = "delivered"
             order.save()
-            # Release agent
             agent = order.agent
             agent.agent_status = 'AVAILABLE'
             agent.save()

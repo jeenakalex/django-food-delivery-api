@@ -11,10 +11,5 @@ urlpatterns = [
     path('<int:order_id>/cancel/', CancelOrderView.as_view(), name='cancel-order'),
     path('<int:order_id>/agentassign/', AssignAgentView.as_view(), name='agent-assign'),
     path('verify/', VerifyOrderOTPView.as_view(), name='verify-otp'),
-
-
-
-
-
   
 ]

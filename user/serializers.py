@@ -35,12 +35,10 @@ class AgentSerializer(serializers.ModelSerializer):
         """Function to create agent"""
         validated_data['role'] = 'AGENT'
 
-        # Generate a random password
         auto_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
         validated_data['password'] = make_password(auto_password)
         user_profile = UserProfile.objects.create(**validated_data)
         
-        # Send email with login credentials
         subject = "Agent Account Created"
         message = f"Hello {user_profile.first_name},\n\nYour agent account has been created.\n\nLogin Credentials:\nUsername: {user_profile.username}\nPassword: {auto_password}\n\n."
         send_email(subject, message,user_profile.email)
