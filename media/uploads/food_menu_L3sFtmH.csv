@@ -1,0 +1,21 @@
+name,description,price,status
+Margherita Pizza,"Classic pizza with tomato, mozzarella, and basil",9.99,Available
+Pepperoni Pizza,Pizza topped with pepperoni and cheese,11.99,Available
+BBQ Chicken Pizza,"BBQ sauce, chicken, onions, and cheese",12.99,Available
+Veggie Supreme,Mixed vegetables with cheese on a pizza,10.99,Available
+Spaghetti Carbonara,Pasta with creamy egg-based sauce and pancetta,13.99,Unavailable
+Lasagna,Layered pasta with meat sauce and cheese,14.99,Available
+Caesar Salad,"Romaine lettuce, croutons, and Caesar dressing",7.99,Available
+Greek Salad,"Tomatoes, olives, feta, and cucumber salad",8.99,Available
+Grilled Chicken Sandwich,"Grilled chicken, lettuce, and mayo in a bun",9.49,Unavailable
+Club Sandwich,"Triple-layer sandwich with turkey, bacon, and lettuce",10.49,Available
+Cheeseburger,"Beef patty, cheese, lettuce, and tomato",8.99,Available
+Veggie Burger,Plant-based burger with lettuce and tomato,9.49,Available
+Chicken Alfredo Pasta,Pasta with creamy Alfredo sauce and chicken,13.49,Unavailable
+Shrimp Scampi,Garlic butter shrimp with pasta,14.99,Available
+Beef Steak,Grilled beef steak with seasoning,18.99,Available
+Grilled Salmon,Grilled salmon with lemon butter sauce,17.99,Available
+Tacos,Soft tortillas filled with meat and toppings,7.99,Unavailable
+Burrito,Stuffed flour tortilla with beans and meat,8.99,Available
+Chicken Wings,Fried chicken wings with various sauces,9.99,Available
+Garlic Bread,Toasted bread with garlic butter,4.99,Available
