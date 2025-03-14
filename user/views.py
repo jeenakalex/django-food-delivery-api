@@ -1,5 +1,4 @@
 from django.shortcuts import render
-
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.response import Response
@@ -7,15 +6,12 @@ from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework import serializers
 from rest_framework.permissions import IsAuthenticated
-
 from django.contrib.auth.models import User
 from rest_framework.generics import ListAPIView,DestroyAPIView,UpdateAPIView,CreateAPIView,RetrieveUpdateAPIView
 from .serializers import UserSerializer, AgentSerializer, UpdateAgentSerializer, UpdateCustomerSerializer, CustomerSerializer, CustomerListSerializer
 from .permissions import IsAdminUser, IsCustomer
 from .models import UserProfile
 from order.models import Order
-
-
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     """
@@ -35,7 +31,6 @@ class CustomTokenObtainPairView(TokenObtainPairView):
     """
     serializer_class = CustomTokenObtainPairSerializer
 
-
 class CreateAgentView(CreateAPIView):
     """
     View for create agent
@@ -50,7 +45,6 @@ class CreateAgentView(CreateAPIView):
             user = serializer.save()
             return Response({"message": "Agent created successfully!.","data":AgentSerializer(user).data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
     
 class UpdateAgentView(UpdateAPIView):
     """
@@ -72,7 +66,6 @@ class UpdateAgentView(UpdateAPIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
 class AgentListView(ListAPIView):
     """Class have some features which displays list of all registered agents"""
     serializer_class = AgentSerializer
@@ -89,7 +82,6 @@ class AgentListView(ListAPIView):
             status=status.HTTP_200_OK
         )
         
-
 class AvailableAgentListView(ListAPIView):
     """Class have some features which displays list of all registered agents"""
     serializer_class = AgentSerializer
@@ -106,7 +98,6 @@ class AvailableAgentListView(ListAPIView):
             status=status.HTTP_200_OK
         )
         
-
 class UpdateCustomerView(UpdateAPIView):
     """
     View for updating Customer details.
@@ -125,8 +116,7 @@ class UpdateCustomerView(UpdateAPIView):
             serializer.save()
             return Response({"message": "Customer updated successfully!"}, status=status.HTTP_200_OK)   
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    
+
 class CustomerSignupView(CreateAPIView):
     """
     View for create agent
@@ -141,7 +131,6 @@ class CustomerSignupView(CreateAPIView):
             return Response({"message": "Customer created successfully!.","data":CustomerSerializer(user).data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
 class DeleteUserProfileView(APIView):
     """API to allow customers to soft delete their profile"""
 
@@ -151,14 +140,12 @@ class DeleteUserProfileView(APIView):
         """Soft delete customer if no pending/assigned orders exist"""
         customer = request.user
         
-        # Check if customer has pending or assigned orders
         has_orders = Order.objects.filter(customer=customer, status__in=['pending', 'assigned']).exists()
         
         if has_orders:
             return Response({"error": "Cannot delete profile. You have pending or assigned orders."}, 
                             status=status.HTTP_400_BAD_REQUEST)
         
-        # Perform soft delete
         customer.soft_delete()
         
         return Response({"message": "Profile deleted successfully."}, status=status.HTTP_200_OK)

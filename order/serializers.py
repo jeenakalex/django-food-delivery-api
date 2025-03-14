@@ -34,11 +34,9 @@ class OrderSerializer(serializers.ModelSerializer):
         for item_data in items_data:
             OrderProduct.objects.create(order=order, **item_data)
         
-        # Generate and send OTP
-        otp = str(random.randint(100000, 999999))  # Generate 6-digit OTP
+        otp = str(random.randint(100000, 999999))
         order.otp_code = otp
         order.save()
-        # Send OTP via email
         subject = "Your Order OTP"
         message = f"Dear {order.customer.first_name},\n\nYour OTP for order verification is {otp}. Please use this OTP to verify the order upon delivery."
         send_email(subject, message, order.customer.email)
@@ -53,8 +51,7 @@ class OrderSerializer(serializers.ModelSerializer):
         instance.payment_mode = validated_data.get('payment_mode', instance.payment_mode)
         instance.save()
 
-        # Update Order Items
-        instance.items.all().delete()  # Remove old order items
+        instance.items.all().delete() 
         for item_data in items_data:
             OrderProduct.objects.create(order=instance, **item_data)
 

@@ -1,13 +1,11 @@
 import django_filters
 import csv
 import os
-
 from django.conf import settings
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.views import APIView
 from django.core.files.storage import default_storage
-
 from .models import Product
 from .serializers import ProductSerializer
 from rest_framework.response import Response
@@ -58,7 +56,7 @@ class ProductRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     permission_classes = [IsAuthenticated, IsAdminUser]
     serializer_class = ProductSerializer
-    parser_classes = (MultiPartParser, FormParser)  # Allow image upload
+    parser_classes = (MultiPartParser, FormParser)
     
     def update(self, request, *args, **kwargs):
         """Update product and return response"""
@@ -69,7 +67,6 @@ class ProductRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
         """Delete product and return response"""
         super().destroy(request, *args, **kwargs)
         return Response({"message": "Product deleted successfully!"}, status=status.HTTP_204_NO_CONTENT)
-
 
 
 ## Bulk Upload
@@ -84,14 +81,11 @@ class UploadProductsView(APIView):
         if not uploaded_file:
             return Response({"error": "No file uploaded"}, status=400)
 
-        # Ensure uploads folder exists
         upload_dir = os.path.join(settings.BASE_DIR, 'uploads')
         os.makedirs(upload_dir, exist_ok=True)
 
-        # Define the file path
         file_path = os.path.join(upload_dir, uploaded_file.name)
 
-        # Save file to disk
         with open(file_path, 'wb+') as destination:
             for chunk in uploaded_file.chunks():
                 destination.write(chunk)
